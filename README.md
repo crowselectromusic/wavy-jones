@@ -27,14 +27,11 @@ Make sure to give it a height and width!
 3. Connect it to an audio source. Wavy Jones is basically a normal Audio Analyser node wearing a sparkly jacket. This means you can connect it up just like you would any other audio node.
 
 ```
-// create a wavyjones instance on the 'oscilloscope' element.
-let wavy = new WavyJones('oscilloscope');
-
 // create an audio context
 let context = new AudioContext()
 
-// get wavy set up in the context
-wavy.setupInAudioContext(context);
+// create a wavyjones instance on the 'oscilloscope' element.
+let wavy = new WavyJones(context, 'oscilloscope');
 
 // create a sinewave oscillator in the audio context
 let sineWave = context.createOscillator()
@@ -57,16 +54,13 @@ To use this with [Tone.js](https://tonejs.github.io/) is pretty simple:
     // this has to be a user-triggered event, or the browser won't let it happen.
     function startScope() { 
         osc.start("+0");
-        if (window.scope.analyser == null) {
-            let context = Tone.getContext().rawContext;
-            window.scope.setupInAudioContext(context);
-            osc.connect(window.scope.analyser);
-        }
     }
 
     // when the page loads, add a scope
     ready(()=>{
-        window.scope = new WavyJones('oscilloscope');
+    	let context = Tone.getContext().rawContext;
+    	window.scope = new WavyJones(context, 'oscilloscope');
+    	osc.connect(window.scope.analyser);
     });
 
     // a little document ready function from https://youmightnotneedjquery.com/#ready
@@ -88,5 +82,5 @@ To use this with [Tone.js](https://tonejs.github.io/) is pretty simple:
 
 ## Other fun:
 
-1. customize the look: `window.wavy = new WavyJones('oscilloscope', 5, "orange");`
+1. customize the look: `window.wavy = new WavyJones(context, 'oscilloscope', 5, "orange");`
 2. change the look after it's been created: `window.wavy.updateStyle("red", 3);`

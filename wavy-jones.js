@@ -1,6 +1,7 @@
 class WavyJones {
-  constructor(element, lineThickness = 3, lineColor = "#43a047") {
+  constructor(context, element, lineThickness = 3, lineColor = "#43a047") {
     let elem = document.getElementById(element);
+    let analyser = context.createAnalyser();
 
     // set up an svg inside the target element
     let svgNamespace = "http://www.w3.org/2000/svg";
@@ -18,30 +19,8 @@ class WavyJones {
     oscLine.setAttribute("fill","none");
     paper.appendChild(oscLine);
 
-    // draw an initial line
-    oscLine.setAttribute("d", `M 0,${elem.offsetHeight/2} L${elem.offsetWidth},${elem.offsetHeight/2} `);
-
-    // save these for access later
-    this.oscLine = oscLine;
-    this.paper = paper;
-    this.elem = elem;
-    this.lineColor = lineColor;
-    this.lineThickness = lineThickness;
-    this.analyser = null;
-  }
-
-  setupInAudioContext(context) {
-    let analyser = context.createAnalyser();
-  
-    this.analyser = analyser;
-
-    this.updateCanvasSize();
-
     let noDataPoints = 10;
     let freqData = new Uint8Array(analyser.frequencyBinCount);
-    let oscLine = this.oscLine;
-
-    let height = this.elem.offsetHeight;
 
     let drawLine = function () {
       analyser.getByteTimeDomainData(freqData);
@@ -50,11 +29,11 @@ class WavyJones {
       let graphStr = '';
 
       // move the line to the first data point
-      graphPoints.push('M0, ' + (freqData[0] / 128) * (height/2));
+      graphPoints.push('M0, ' + (freqData[0] / 128) * (elem.offsetHeight/2));
 
       for (let i = 0; i < freqData.length; i++) {
         if (i % noDataPoints) {
-          let point = (freqData[i] / 128) * (height / 2);
+          let point = (freqData[i] / 128) * (elem.offsetHeight / 2);
           graphPoints.push('L' + i + ', ' + point); 
         }
       }
@@ -69,7 +48,17 @@ class WavyJones {
     };
 
     drawLine();
+
+    // save these for access later
+    this.oscLine = oscLine;
+    this.paper = paper;
+    this.elem = elem;
+    this.lineColor = lineColor;
+    this.lineThickness = lineThickness;
+    this.analyser = analyser;
+    this.updateCanvasSize();
   }
+
 
   updateStyle(lineColor, lineThickness) {
     this.oscLine.setAttribute("stroke", lineColor);
