@@ -85,3 +85,8 @@ To use this with [Tone.js](https://tonejs.github.io/) is pretty simple:
         }
     }, true);
 ```
+
+## Other fun:
+
+1. customize the look: `window.wavy = new WavyJones('oscilloscope', 5, "orange");`
+2. change the look after it's been created: `window.wavy.updateStyle("red", 3);`
